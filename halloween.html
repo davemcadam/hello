@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be Ready.</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            color: #ff6b00;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 800px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 3.5rem);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #ff6b00, 0 0 40px #cc5500;
+            animation: flicker 3s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.7; }
+            94% { opacity: 1; }
+            95% { opacity: 0.6; }
+            96% { opacity: 1; }
+        }
+        
+        .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            margin-bottom: 50px;
+            color: #cc8800;
+            letter-spacing: 3px;
+        }
+        
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .time-box {
+            background: rgba(26, 26, 26, 0.9);
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            padding: 20px 10px;
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .time-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.6);
+        }
+        
+        .time-value {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+            display: block;
+        }
+        
+        .time-label {
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
+            color: #cc8800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 8px;
+            display: block;
+        }
+        
+        .message {
+            margin-top: 50px;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: #997700;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #555;
+        }
+        
+        /* Subtle fog effect */
+        .fog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+        }
+        /* Spooky ghost overlay */
+.ghost-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+        background-size: 1000%, auto;          /* This scales it to fill the viewport */
+    background-position: center;     /* Centers it */
+    background-repeat: no-repeat;    /* Prevents tiling */
+}
+
+.ghost-bg.visible {
+    opacity: 0.1; /* Adjust this value to make it more/less visible */
+}
+        /* Keep the four boxes on one line on small screens */
+@media (max-width: 520px) {
+    .container {
+        padding: 20px 12px;
+    }
+
+    .countdown {
+        gap: 6px;
+    }
+
+    .time-box {
+        padding: 10px 2px;
+        border-width: 1px;
+    }
+
+    .time-value {
+        font-size: 1.35rem;
+    }
+
+    .time-label {
+        font-size: 0.55rem;
+        letter-spacing: 1px;
+    }
+}
+/* --- reveal section, hidden until the countdown ends --- */
+#stage {
+    transition: opacity 0.9s ease;
+}
+
+#stage.fade-out {
+    opacity: 0;
+}
+
+.reveal {
+    display: none;
+    margin-top: 30px;
+}
+
+.reveal.show {
+    display: block;
+    animation: riseIn 1.2s ease forwards;
+}
+
+@keyframes riseIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.reveal-heading {
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    color: #ff6b00;
+    text-shadow: 0 0 20px #ff6b00;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+.video-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    border: 2px solid #ff6b00;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 0 30px rgba(255, 107, 0, 0.45);
+}
+
+.video-wrap video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: none;
+    background: rgba(0, 0, 0, 0.68);
+    color: #ff6b00;
+    font-family: inherit;
+    font-size: clamp(0.85rem, 2.5vw, 1.15rem);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.play-overlay:hover {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.play-overlay.hidden {
+    display: none;
+}
+/* Hide the actual video until play is clicked */
+.video-wrap video {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.video-wrap video.show-video {
+    opacity: 1;
+}
+    </style>
+</head>
+<body>
+    <div class="ghost-bg" id="ghostBg"></div>   
+    <div class="fog"></div>
+    <div class="container">
+
+    <div id="stage">
+        <h1>Today's the day, Toni.</h1>
+        
+        <p class="tagline">I hope you're ready.</p>
+
+            <div class="countdown" id="countdown">
+    <div class="time-box">
+        <span class="time-value" id="days">00</span>
+        <span class="time-label">Days</span>
+    </div>
+    <div class="time-box">
+        <span class="time-value" id="hours">00</span>
+        <span class="time-label">Hours</span>
+    </div>
+    <div class="time-box">
+        <span class="time-value" id="minutes">00</span>
+        <span class="time-label">Minutes</span>
+    </div>
+    <div class="time-box">
+        <span class="time-value" id="seconds">00</span>
+        <span class="time-label">Seconds</span>
+    </div>
+</div>
+        </div>
+
+    <div id="reveal" class="reveal">
+        <h2 class="reveal-heading">Time's up.</h2>
+        <div class="video-wrap">
+            <video id="prankVideo" playsinline controls preload="metadata">
+                <source src="be-ready-toni.mp4" type="video/mp4">
+                Your browser can't play this video.
+            </video>
+            <button id="playButton" class="play-overlay">&#9654; are you ready?</button>
+        </div>
+    </div>
+
+    </div>
+
+</div>
+    
+   <script>
+    // ====== SET YOUR REVEAL MOMENT HERE ======
+    // Format: new Date(YEAR, MONTH, DAY, HOUR, MINUTE)
+    // IMPORTANT: the month is zero-indexed, so 9 = October
+    const REVEAL_DATE = new Date(2026, 9, 31, 21, 0, 0);
+
+    let timerId = null;
+    let revealed = false;
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function updateCountdown() {
+        const now = new Date();
+        const diff = REVEAL_DATE - now;
+
+        // Time's up — swap the countdown for the video
+        if (diff <= 0) {
+            revealVideo();
+            return;
+        }
+
+        const days    = Math.floor(diff / 86400000);
+        const hours   = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+
+        document.getElementById('days').textContent    = pad(days);
+        document.getElementById('hours').textContent   = pad(hours);
+        document.getElementById('minutes').textContent = pad(minutes);
+        document.getElementById('seconds').textContent = pad(seconds);
+    }
+
+    function revealVideo() {
+        if (revealed) return;
+        revealed = true;
+
+        if (timerId) clearInterval(timerId);
+
+        const stage  = document.getElementById('stage');
+        const reveal = document.getElementById('reveal');
+
+        // Fade the countdown out, then bring the video in
+        stage.classList.add('fade-out');
+
+        setTimeout(function () {
+            stage.style.display = 'none';
+            reveal.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 900);
+    }
+
+    // Play button handling
+const playBtn = document.getElementById('playButton');
+const video   = document.getElementById('prankVideo');
+
+function showVideo() {
+    video.classList.add('show-video');
+    playBtn.classList.add('hidden');
+}
+
+if (playBtn && video) {
+    // Our button starts the video
+    playBtn.addEventListener('click', function () {
+        showVideo();
+        video.play();
+    });
+
+    // ANY playback start reveals the video — button, native
+    // controls, keyboard, fullscreen resume, all of it
+    video.addEventListener('play', showVideo);
+
+    // Pausing no longer blacks the screen out — the frozen
+    // frame just stays, like a normal video player
+}
+
+
+
+    // Kick it off
+    updateCountdown();
+    timerId = setInterval(updateCountdown, 1000);
+// Sporadic ghost image effect
+const ghostBg = document.getElementById('ghostBg');
+
+// Path to your spooky image file
+const GHOST_IMAGE_PATH = 'ghost-overlay.png';
+
+let ghostIntervalId = null;
+
+// Load and set the background image
+const ghostImg = new Image();
+ghostImg.src = GHOST_IMAGE_PATH;
+ghostImg.onload = function () {
+    ghostBg.style.backgroundImage = `url('${GHOST_IMAGE_PATH}')`;
+};
+
+function toggleGhost() {
+    ghostBg.classList.toggle('visible');
+}
+
+function startGhostEffect() {
+    // Clear any existing interval
+    if (ghostIntervalId) clearInterval(ghostIntervalId);
+
+    // Show ghost for 2-6 seconds, then hide for 4-10 seconds
+    scheduleGhostAppear();
+}
+
+function scheduleGhostAppear() {
+    // Random delay before showing (4-10 seconds)
+    const appearDelay = Math.floor(Math.random() * 4000) + 2000;
+
+    setTimeout(function () {
+        toggleGhost();
+        // After showing, schedule disappearance
+        const disappearDelay = Math.floor(Math.random() * 5000);
+        setTimeout(function () {
+            toggleGhost();
+            scheduleGhostAppear(); // Loop indefinitely
+        }, disappearDelay);
+    }, appearDelay);
+}
+
+// Start the ghost effect after the page loads
+startGhostEffect();
+
+</script>
+</body>
+</html>
